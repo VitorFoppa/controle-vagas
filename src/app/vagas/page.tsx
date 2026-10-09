@@ -168,6 +168,14 @@ Minhas vagas </h1>
             </div>
           )}
 
+          {/* Botão para abrir a edição da vaga */}
+          <Link
+            href={`/vagas/${vaga.id}/editar`}
+            className="inline-block mt-4 mr-3 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-100"
+          >
+            Editar vaga
+          </Link>
+
           {/* Ação para excluir a vaga */}
           <ExcluirVagaButton id={Number(vaga.id)} />
         </article>
