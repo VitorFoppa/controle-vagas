@@ -64,18 +64,18 @@ export default function ExcluirVagaButton({
   }
 
   return (
-    <div className="mt-4">
+    <div className="flex flex-col items-end">
       <button
         type="button"
         onClick={excluirVaga}
         disabled={carregando}
-        className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex h-10 items-center justify-center rounded-xl border border-danger/40 px-4 text-sm font-medium text-danger transition hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {carregando ? "Excluindo..." : "Excluir vaga"}
       </button>
 
       {erro && (
-        <p role="alert" className="mt-2 text-sm text-red-600">
+        <p role="alert" className="mt-2 text-sm text-danger">
           {erro}
         </p>
       )}

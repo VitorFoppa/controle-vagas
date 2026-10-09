@@ -30,6 +30,31 @@ const nomesStatus: Record<string, string> = {
   REJEITADO: "Rejeitado",
 };
 
+// Traduz as modalidades do banco para textos da interface.
+const nomesModalidade: Record<string, string> = {
+  REMOTO: "Remoto",
+  HIBRIDO: "Híbrido",
+  PRESENCIAL: "Presencial",
+};
+
+// Cores das etiquetas de status (claro e escuro).
+const coresStatus: Record<string, string> = {
+  SALVA: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  CANDIDATEI: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+  PROCESSO:
+    "bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300",
+  ENTREVISTA:
+    "bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+  APROVADO:
+    "bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+  REJEITADO: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300",
+};
+
+// Classes compartilhadas pelos campos de busca e filtro.
+const campo =
+  "w-full rounded-lg border border-line bg-surface px-4 py-2 text-foreground " +
+  "placeholder:text-muted outline-none focus:ring-2 focus:ring-primary";
+
 type ListaVagasProps = {
   vagas: Vaga[];
 };
@@ -49,8 +74,7 @@ export default function ListaVagas({ vagas }: ListaVagasProps) {
         vaga.cargo.toLocaleLowerCase("pt-BR").includes(textoBusca);
 
       const correspondeStatus =
-        statusSelecionado === "TODOS" ||
-        vaga.status === statusSelecionado;
+        statusSelecionado === "TODOS" || vaga.status === statusSelecionado;
 
       return correspondeTexto && correspondeStatus;
     });
@@ -65,11 +89,11 @@ export default function ListaVagas({ vagas }: ListaVagasProps) {
   return (
     <section>
       {/* Campos de pesquisa e filtragem */}
-      <div className="mb-6 grid grid-cols-1 gap-4 rounded-xl border bg-white p-4 sm:grid-cols-2">
+      <div className="mb-6 grid grid-cols-1 gap-4 rounded-xl border border-line bg-surface p-4 sm:grid-cols-2">
         <div>
           <label
             htmlFor="busca-vaga"
-            className="mb-2 block text-sm font-medium text-gray-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Buscar empresa ou cargo
           </label>
@@ -80,14 +104,14 @@ export default function ListaVagas({ vagas }: ListaVagasProps) {
             value={busca}
             onChange={(event) => setBusca(event.target.value)}
             placeholder="Ex.: Java, Solinftec..."
-            className="w-full rounded-lg border px-4 py-2 outline-none focus:ring-2 focus:ring-gray-300"
+            className={campo}
           />
         </div>
 
         <div>
           <label
             htmlFor="filtro-status"
-            className="mb-2 block text-sm font-medium text-gray-700"
+            className="mb-2 block text-sm font-medium text-foreground"
           >
             Filtrar por status
           </label>
@@ -96,7 +120,7 @@ export default function ListaVagas({ vagas }: ListaVagasProps) {
             id="filtro-status"
             value={statusSelecionado}
             onChange={(event) => setStatusSelecionado(event.target.value)}
-            className="w-full rounded-lg border px-4 py-2 outline-none focus:ring-2 focus:ring-gray-300"
+            className={campo}
           >
             <option value="TODOS">Todos os status</option>
             <option value="SALVA">Salva</option>
@@ -109,110 +133,142 @@ export default function ListaVagas({ vagas }: ListaVagasProps) {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-2">
-          <p className="text-sm text-gray-600">
-            Exibindo{" "}
-            <strong>{vagasFiltradas.length}</strong>{" "}
-            de <strong>{vagas.length}</strong>{" "}
+          <p className="text-sm text-muted">
+            Exibindo <strong className="text-foreground">{vagasFiltradas.length}</strong>{" "}
+            de <strong className="text-foreground">{vagas.length}</strong>{" "}
             {vagas.length === 1 ? "vaga" : "vagas"}
           </p>
 
           <button
             type="button"
             onClick={limparFiltros}
-            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+            className="rounded-lg border border-line px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-hover"
           >
             Limpar filtros
           </button>
         </div>
       </div>
 
-      {/* Mensagem quando não há vagas cadastradas */}
       {vagas.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-white p-10 text-center">
-          <h2 className="text-lg font-semibold text-gray-900">
+        // Mensagem quando não há vagas cadastradas
+        <div className="rounded-xl border border-dashed border-line bg-surface p-10 text-center">
+          <h2 className="text-lg font-semibold text-foreground">
             Nenhuma vaga cadastrada
           </h2>
 
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-muted">
             Cadastre sua primeira oportunidade para começar a acompanhar
             suas candidaturas.
           </p>
 
           <Link
             href="/vagas/nova"
-            className="mt-5 inline-block rounded-lg bg-black px-5 py-2 font-medium text-white hover:bg-gray-800"
+            className="mt-5 inline-block rounded-lg bg-primary px-5 py-2 font-medium text-primary-foreground hover:bg-primary-hover"
           >
             Cadastrar primeira vaga
           </Link>
         </div>
       ) : vagasFiltradas.length === 0 ? (
-        /* Mensagem quando os filtros não encontram resultados */
-        <div className="rounded-xl border border-dashed bg-white p-8 text-center">
-          <h2 className="font-semibold text-gray-900">
+        // Mensagem quando os filtros não encontram resultados
+        <div className="rounded-xl border border-dashed border-line bg-surface p-8 text-center">
+          <h2 className="font-semibold text-foreground">
             Nenhuma vaga encontrada
           </h2>
 
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted">
             Tente alterar o texto da busca ou selecionar outro status.
           </p>
         </div>
       ) : (
-        /* Cartões das vagas filtradas */
-        <div className="space-y-4">
+        // Cartões das vagas filtradas
+        <div className="grid grid-cols-1 gap-4">
           {vagasFiltradas.map((vaga) => (
             <article
               key={vaga.id}
-              className="rounded-xl border bg-white p-5 shadow-sm"
+              className="flex min-w-0 flex-col rounded-2xl border border-line bg-surface p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5"
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
+              {/* Cabeçalho: cargo, empresa e status */}
+              <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 flex-1">
+                  <h2 className="break-words text-lg font-semibold leading-snug text-foreground">
                     {vaga.cargo}
                   </h2>
 
-                  <p className="mt-1 font-medium text-gray-700">
+                  <p className="mt-1 break-words text-sm font-medium text-muted">
                     {vaga.empresa}
                   </p>
                 </div>
 
-                <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
+                <span
+                  className={`inline-flex w-fit shrink-0 items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                    coresStatus[vaga.status] ?? coresStatus.SALVA
+                  }`}
+                >
                   {nomesStatus[vaga.status] ?? vaga.status}
                 </span>
               </div>
 
-              {/* Informações complementares */}
-              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-600">
+              {/* Informações em grade para manter o alinhamento */}
+              <div className="mt-5 grid min-w-0 grid-cols-1 gap-4 border-t border-line pt-4 sm:grid-cols-2 xl:grid-cols-3">
                 {vaga.modalidade && (
-                  <span>Modalidade: {vaga.modalidade}</span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-muted">
+                      Modalidade
+                    </p>
+                    <p className="mt-1 break-words text-sm font-medium text-foreground">
+                      {nomesModalidade[vaga.modalidade] ?? vaga.modalidade}
+                    </p>
+                  </div>
                 )}
 
                 {vaga.localizacao && (
-                  <span>Localização: {vaga.localizacao}</span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-muted">
+                      Localização
+                    </p>
+                    <p className="mt-1 break-words text-sm font-medium text-foreground">
+                      {vaga.localizacao}
+                    </p>
+                  </div>
                 )}
 
-                {vaga.salario && <span>Salário: {vaga.salario}</span>}
+                {vaga.salario && (
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-muted">Salário</p>
+                    <p className="mt-1 break-words text-sm font-medium text-foreground">
+                      {vaga.salario}
+                    </p>
+                  </div>
+                )}
 
-                {/* Exibe a data da candidatura quando informada */}
                 {vaga.data_candidatura && (
-                <p className="mt-2 text-sm text-gray-500">
-                    Candidatura:{" "}
-                    {new Date(`${vaga.data_candidatura}T12:00:00`).toLocaleDateString(
-                    "pt-BR"
-                    )}
-                </p>
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-muted">
+                      Data da candidatura
+                    </p>
+                    <p className="mt-1 text-sm font-medium text-foreground">
+                      {new Date(
+                        `${vaga.data_candidatura}T12:00:00`
+                      ).toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
                 )}
 
-                <span>
-                  Cadastrada em:{" "}
-                  {new Date(vaga.created_at).toLocaleDateString("pt-BR")}
-                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-muted">
+                    Data de cadastro
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    {new Date(vaga.created_at).toLocaleDateString("pt-BR")}
+                  </p>
+                </div>
               </div>
 
-              {/* Ações disponíveis para cada vaga */}
-              <div className="mt-4 flex flex-wrap items-center gap-3 border-t pt-4">
+              {/* Ações: todos os botões com a mesma altura e alinhados */}
+              <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-line pt-4">
                 <Link
                   href={`/vagas/${vaga.id}/editar`}
-                  className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+                  className="inline-flex h-10 items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white transition hover:bg-blue-700"
                 >
                   Editar vaga
                 </Link>
@@ -222,13 +278,16 @@ export default function ListaVagas({ vagas }: ListaVagasProps) {
                     href={vaga.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-medium text-blue-700 underline hover:text-blue-900"
+                    className="inline-flex h-10 items-center justify-center rounded-xl border border-line px-4 text-sm font-medium text-foreground transition hover:bg-surface-hover"
                   >
                     Abrir anúncio
                   </a>
                 )}
 
-                <ExcluirVagaButton id={vaga.id} />
+                {/* Empurra o botão de excluir para a direita e padroniza o botão interno */}
+                <div className="ml-auto">
+                  <ExcluirVagaButton id={vaga.id} />
+                </div>
               </div>
             </article>
           ))}
