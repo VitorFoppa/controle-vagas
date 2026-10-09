@@ -18,6 +18,7 @@ salario: string | null;
 url: string | null;
 status: string;
 observacoes: string | null;
+data_candidatura: string | null;
 };
 
 // Define as propriedades esperadas pelo formulário.
@@ -39,6 +40,11 @@ const [salario, setSalario] = useState(vaga.salario ?? "");
 const [url, setUrl] = useState(vaga.url ?? "");
 const [status, setStatus] = useState(vaga.status);
 const [observacoes, setObservacoes] = useState(vaga.observacoes ?? "");
+
+// Mantém a data já salva ao abrir a edição.
+const [dataCandidatura, setDataCandidatura] = useState(
+  vaga.data_candidatura ?? ""
+);
 
 // Controla o envio e as mensagens da tela.
 const [carregando, setCarregando] = useState(false);
@@ -82,6 +88,8 @@ const { error: erroAtualizacao } = await supabase
     status,
     observacoes: observacoes.trim() || null,
     updated_at: new Date().toISOString(),
+    // Atualiza a data da candidatura.
+    data_candidatura: dataCandidatura || null,
   })
   .eq("id", vaga.id);
 

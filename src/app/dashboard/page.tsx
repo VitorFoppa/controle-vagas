@@ -58,11 +58,11 @@ supabase
   .order("created_at", { ascending: false })
   .limit(5),
 
-// Busca status e modalidade de todas as vagas do usuário.
+// Busca status, modalidade e data da candidatura
+// de todas as vagas do usuário para montar os gráficos.
 supabase
   .from("vagas")
-  .select("status, modalidade"),
-
+  .select("status, modalidade, data_candidatura"),
 ]);
 
 // Identifica falhas para não apresentar os indicadores
@@ -250,7 +250,7 @@ Dashboard </h1>
     )}
   </section>
   {/* Gráficos alimentados pelos dados do Supabase */}
-<DashboardGraficos vagas={dadosGraficos} />
+<DashboardGraficos vagas={resultadoGraficos.data ?? []} />
 </main>
 
 

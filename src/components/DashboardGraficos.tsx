@@ -1,7 +1,5 @@
-"use client";
 
-// Componente visual dos gráficos do dashboard.
-// Recebe os dados consultados no servidor e monta os gráficos.
+"use client";
 
 import {
   ResponsiveContainer,
@@ -15,19 +13,22 @@ import {
   Pie,
   Cell,
   Legend,
+  LineChart,
+  Line,
 } from "recharts";
 
-// Define os dados necessários para os gráficos.
+// Dados necessários para montar os gráficos.
 type VagaGrafico = {
   status: string;
   modalidade: string | null;
+  data_candidatura: string | null;
 };
 
 type DashboardGraficosProps = {
   vagas: VagaGrafico[];
 };
 
-// Traduz os status internos para nomes amigáveis.
+// Nomes amigáveis para os status armazenados no banco.
 const nomesStatus: Record<string, string> = {
   SALVA: "Salva",
   CANDIDATEI: "Candidatei",
@@ -37,27 +38,73 @@ const nomesStatus: Record<string, string> = {
   REJEITADO: "Rejeitado",
 };
 
-// Agrupa as modalidades para facilitar a leitura do gráfico.
+// Nomes amigáveis para as modalidades.
 const nomesModalidade: Record<string, string> = {
   REMOTO: "Remoto",
   HIBRIDO: "Híbrido",
   PRESENCIAL: "Presencial",
 };
 
-const cores = ["#2563eb", "#16a34a", "#9333ea", "#ea580c", "#0891b2", "#dc2626"];
+const cores = [
+  "#2563eb",
+  "#16a34a",
+  "#9333ea",
+  "#ea580c",
+  "#0891b2",
+  "#dc2626",
+];
+
+// Monta os últimos seis meses, incluindo o mês atual.
+function criarDadosMensais(vagas: VagaGrafico[]) {
+  const agora = new Date();
+
+  const meses = Array.from({ length: 6 }, (_, indice) => {
+    // Começa cinco meses antes e termina no mês atual.
+    const data = new Date(
+      agora.getFullYear(),
+      agora.getMonth() - 5 + indice,
+      1
+    );
+
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+
+    return {
+      chave: `${ano}-${mes}`,
+      mes: data.toLocaleDateString("pt-BR", {
+        month: "short",
+        year: "2-digit",
+      }),
+      quantidade: 0,
+    };
+  });
+
+  // Conta as candidaturas por ano e mês.
+  vagas.forEach((vaga) => {
+    if (!vaga.data_candidatura) return;
+
+    // A data do banco vem no formato YYYY-MM-DD.
+    const chave = vaga.data_candidatura.slice(0, 7);
+    const mesEncontrado = meses.find((mes) => mes.chave === chave);
+
+    if (mesEncontrado) {
+      mesEncontrado.quantidade += 1;
+    }
+  });
+
+  return meses;
+}
 
 export default function DashboardGraficos({
   vagas,
 }: DashboardGraficosProps) {
-  // Conta as vagas de cada status, inclusive os que têm valor zero.
-  const dadosStatus = Object.entries(nomesStatus).map(
-    ([status, nome]) => ({
-      nome,
-      quantidade: vagas.filter((vaga) => vaga.status === status).length,
-    })
-  );
+  // Quantidade de vagas por status.
+  const dadosStatus = Object.entries(nomesStatus).map(([status, nome]) => ({
+    nome,
+    quantidade: vagas.filter((vaga) => vaga.status === status).length,
+  }));
 
-  // Conta as vagas por modalidade.
+  // Quantidade de vagas por modalidade.
   const contagemModalidade: Record<string, number> = {};
 
   vagas.forEach((vaga) => {
@@ -71,66 +118,73 @@ export default function DashboardGraficos({
     ([modalidade, quantidade]) => ({
       nome:
         nomesModalidade[modalidade] ??
-        (modalidade === "NAO_INFORMADA" ? "Não informada" : modalidade),
+        (modalidade === "NAO_INFORMADA"
+          ? "Não informada"
+          : modalidade),
       quantidade,
     })
   );
 
-  // Exibe uma mensagem quando ainda não existem registros.
+  // Evolução mensal das candidaturas realizadas.
+  const dadosMensais = criarDadosMensais(vagas);
+
   if (vagas.length === 0) {
     return (
       <section className="mt-8 rounded-xl border bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Análise das vagas
-        </h2>
-
-        <p className="mt-2 text-sm text-gray-600">
-          Cadastre vagas para visualizar os gráficos de status e modalidade.
+        <h2 className="text-xl font-bold">Análise das vagas</h2>
+        <p className="mt-2 text-gray-600">
+          Cadastre vagas para visualizar seus gráficos.
         </p>
       </section>
     );
   }
 
   return (
-    <section className="mt-8">
-      <div className="mb-4">
-        <h2 className="text-xl font-bold text-gray-900">
-          Análise das vagas
-        </h2>
+    <section className="mt-8 space-y-6">
+      <h2 className="text-xl font-bold">Análise das vagas</h2>
 
-        <p className="mt-1 text-sm text-gray-600">
-          Distribuição das oportunidades cadastradas.
+      {/* Gráfico de candidaturas realizadas por mês. */}
+      <article className="rounded-xl border bg-white p-5">
+        <h3 className="mb-1 font-semibold">
+          Evolução mensal das candidaturas
+        </h3>
+        <p className="mb-4 text-sm text-gray-500">
+          Últimos seis meses, considerando a data da candidatura.
         </p>
-      </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        {/* Gráfico de barras: quantidade por status */}
-        <article className="min-w-0 rounded-xl border bg-white p-5 shadow-sm">
-          <h3 className="mb-4 font-semibold text-gray-900">
-            Vagas por status
-          </h3>
+        <div className="h-72 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={dadosMensais}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="mes" />
+              <YAxis allowDecimals={false} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="quantidade"
+                name="Candidaturas"
+                stroke="#2563eb"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </article>
 
-          <div className="h-80 w-full">
+      {/* Gráficos de status e modalidade. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <article className="rounded-xl border bg-white p-5">
+          <h3 className="mb-4 font-semibold">Vagas por status</h3>
+
+          <div className="h-72 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={dadosStatus}
-                margin={{ top: 10, right: 10, left: -15, bottom: 10 }}
-              >
+              <BarChart data={dadosStatus}>
                 <CartesianGrid strokeDasharray="3 3" />
-
-                <XAxis
-                  dataKey="nome"
-                  tick={{ fontSize: 11 }}
-                  interval={0}
-                  angle={-20}
-                  textAnchor="end"
-                  height={65}
-                />
-
+                <XAxis dataKey="nome" />
                 <YAxis allowDecimals={false} />
-
                 <Tooltip />
-
                 <Bar
                   dataKey="quantidade"
                   name="Quantidade"
@@ -142,45 +196,35 @@ export default function DashboardGraficos({
           </div>
         </article>
 
-        {/* Gráfico de pizza: distribuição por modalidade */}
-        <article className="min-w-0 rounded-xl border bg-white p-5 shadow-sm">
-          <h3 className="mb-4 font-semibold text-gray-900">
-            Vagas por modalidade
-          </h3>
+        <article className="rounded-xl border bg-white p-5">
+          <h3 className="mb-4 font-semibold">Vagas por modalidade</h3>
 
-          {dadosModalidade.length === 0 ? (
-            <p className="py-12 text-center text-sm text-gray-500">
-              Nenhuma modalidade informada.
-            </p>
-          ) : (
-            <div className="h-80 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={dadosModalidade}
-                    dataKey="quantidade"
-                    nameKey="nome"
-                    cx="50%"
-                    cy="45%"
-                    outerRadius={90}
-                    label={({ name, percent }) =>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={dadosModalidade}
+                  dataKey="quantidade"
+                  nameKey="nome"
+                  cx="50%"
+                  cy="45%"
+                  outerRadius={85}
+                  label={({ name, percent }) =>
                     `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
-                    }
-                  >
-                    {dadosModalidade.map((item, index) => (
-                      <Cell
-                        key={item.nome}
-                        fill={cores[index % cores.length]}
-                      />
-                    ))}
-                  </Pie>
-
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          )}
+                  }
+                >
+                  {dadosModalidade.map((item, indice) => (
+                    <Cell
+                      key={item.nome}
+                      fill={cores[indice % cores.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </article>
       </div>
     </section>

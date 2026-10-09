@@ -17,6 +17,8 @@ const [salario, setSalario] = useState("");
 const [url, setUrl] = useState("");
 const [status, setStatus] = useState("SALVA");
 const [observacoes, setObservacoes] = useState("");
+// Data em que a candidatura foi realizada.
+const [dataCandidatura, setDataCandidatura] = useState("");
 
 // Controla o envio e a mensagem de erro.
 const [carregando, setCarregando] = useState(false);
@@ -58,6 +60,8 @@ const { error: erroCadastro } = await supabase
     empresa: empresa.trim(),
     cargo: cargo.trim(),
     modalidade: modalidade || null,
+    // Salva a data ou NULL caso o campo fique vazio.
+    data_candidatura: dataCandidatura || null,
     localizacao: localizacao.trim() || null,
     salario: salario.trim() || null,
     url: url.trim() || null,
@@ -137,6 +141,24 @@ className="w-full rounded-lg border px-4 py-2 outline-none focus:ring-2"
       <option value="PRESENCIAL">Presencial</option>
     </select>
   </div>
+
+  {/* Data em que você se candidatou à vaga */}
+<div>
+  <label
+    htmlFor="dataCandidatura"
+    className="mb-1 block text-sm font-medium text-gray-700"
+  >
+    Data da candidatura
+  </label>
+
+  <input
+    id="dataCandidatura"
+    type="date"
+    value={dataCandidatura}
+    onChange={(e) => setDataCandidatura(e.target.value)}
+    className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-blue-500"
+  />
+</div>
 
   {/* Localização */}
   <div className="mb-5">

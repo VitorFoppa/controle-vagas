@@ -43,12 +43,12 @@ notFound();
 const supabase = await createClient();
 
 const { data: vaga, error } = await supabase
-.from("vagas")
-.select(
-"id, empresa, cargo, modalidade, localizacao, salario, url, status, observacoes"
-)
-.eq("id", id)
-.maybeSingle();
+  .from("vagas")
+  .select(
+    "id, empresa, cargo, modalidade, localizacao, salario, url, status, observacoes, data_candidatura"
+  )
+  .eq("id", id)
+  .maybeSingle();
 
 // Registra falhas de consulta no terminal.
 if (error) {
