@@ -4,17 +4,31 @@
 // O funcionamento será implementado depois,
 // quando tivermos o banco de dados.
 
+import { Suspense } from "react";
+import { connection } from "next/server";
+import Link from "next/link";
 import AppLayout from "@/components/AppLayout";
+import { exigirUsuario } from "@/utils/supabase/proteger-rota";
 
 export default function NovaVagaPage() {
   return (
     <AppLayout>
+      <Suspense fallback={<p className="text-gray-500">Carregando...</p>}>
+        <ConteudoNovaVaga />
+      </Suspense>
+    </AppLayout>
+  );
+}
 
+async function ConteudoNovaVaga() {
+  await connection();
+  await exigirUsuario();
+
+  return (
+    <>
       {/* Cabeçalho */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">
-          Nova vaga
-        </h1>
+        <h1 className="text-2xl font-bold">Nova vaga</h1>
 
         <p className="mt-1 text-gray-600">
           Cadastre uma nova oportunidade de emprego.
@@ -23,16 +37,11 @@ export default function NovaVagaPage() {
 
       {/* Formulário */}
       <form className="max-w-3xl rounded-xl border bg-white p-6 shadow-sm">
-
         {/* Empresa */}
         <div className="mb-5">
-          <label
-            htmlFor="empresa"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="empresa" className="mb-2 block text-sm font-medium">
             Empresa
           </label>
-
           <input
             id="empresa"
             name="empresa"
@@ -44,13 +53,9 @@ export default function NovaVagaPage() {
 
         {/* Cargo */}
         <div className="mb-5">
-          <label
-            htmlFor="cargo"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="cargo" className="mb-2 block text-sm font-medium">
             Cargo
           </label>
-
           <input
             id="cargo"
             name="cargo"
@@ -62,13 +67,9 @@ export default function NovaVagaPage() {
 
         {/* Modalidade */}
         <div className="mb-5">
-          <label
-            htmlFor="modalidade"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="modalidade" className="mb-2 block text-sm font-medium">
             Modalidade
           </label>
-
           <select
             id="modalidade"
             name="modalidade"
@@ -83,13 +84,9 @@ export default function NovaVagaPage() {
 
         {/* Localização */}
         <div className="mb-5">
-          <label
-            htmlFor="localizacao"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="localizacao" className="mb-2 block text-sm font-medium">
             Localização
           </label>
-
           <input
             id="localizacao"
             name="localizacao"
@@ -101,13 +98,9 @@ export default function NovaVagaPage() {
 
         {/* Salário */}
         <div className="mb-5">
-          <label
-            htmlFor="salario"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="salario" className="mb-2 block text-sm font-medium">
             Salário
           </label>
-
           <input
             id="salario"
             name="salario"
@@ -119,13 +112,9 @@ export default function NovaVagaPage() {
 
         {/* URL da vaga */}
         <div className="mb-5">
-          <label
-            htmlFor="url"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="url" className="mb-2 block text-sm font-medium">
             Link da vaga
           </label>
-
           <input
             id="url"
             name="url"
@@ -137,46 +126,28 @@ export default function NovaVagaPage() {
 
         {/* Status */}
         <div className="mb-5">
-          <label
-            htmlFor="status"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="status" className="mb-2 block text-sm font-medium">
             Status
           </label>
-
           <select
             id="status"
             name="status"
             className="w-full rounded-lg border px-4 py-2 outline-none focus:ring-2"
           >
             <option value="SALVA">Salva</option>
-            <option value="CANDIDATEI">
-              Candidatei
-            </option>
-            <option value="PROCESSO">
-              Processo seletivo
-            </option>
-            <option value="ENTREVISTA">
-              Entrevista
-            </option>
-            <option value="APROVADO">
-              Aprovado
-            </option>
-            <option value="REJEITADO">
-              Rejeitado
-            </option>
+            <option value="CANDIDATEI">Candidatei</option>
+            <option value="PROCESSO">Processo seletivo</option>
+            <option value="ENTREVISTA">Entrevista</option>
+            <option value="APROVADO">Aprovado</option>
+            <option value="REJEITADO">Rejeitado</option>
           </select>
         </div>
 
         {/* Observações */}
         <div className="mb-6">
-          <label
-            htmlFor="observacoes"
-            className="mb-2 block text-sm font-medium"
-          >
+          <label htmlFor="observacoes" className="mb-2 block text-sm font-medium">
             Observações
           </label>
-
           <textarea
             id="observacoes"
             name="observacoes"
@@ -188,7 +159,6 @@ export default function NovaVagaPage() {
 
         {/* Botões */}
         <div className="flex gap-3">
-
           {/* Botão salvar.
               O funcionamento será implementado depois. */}
           <button
@@ -199,17 +169,14 @@ export default function NovaVagaPage() {
           </button>
 
           {/* Voltar para a lista */}
-          <a
+          <Link
             href="/vagas"
             className="rounded-lg border px-5 py-2 font-medium hover:bg-gray-100"
           >
             Cancelar
-          </a>
-
+          </Link>
         </div>
-
       </form>
-
-    </AppLayout>
+    </>
   );
 }
