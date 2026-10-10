@@ -129,7 +129,7 @@ O menu lateral se adapta para dispositivos menores e pode ser aberto através do
 
 ### Deploy
 
-- **Vercel**
+- **Render**
 - **Supabase**
 
 ---
