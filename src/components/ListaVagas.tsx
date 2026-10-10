@@ -103,7 +103,7 @@ export default function ListaVagas({ vagas }: ListaVagasProps) {
             type="search"
             value={busca}
             onChange={(event) => setBusca(event.target.value)}
-            placeholder="Ex.: Java, Solinftec..."
+            placeholder="Ex.: Java..."
             className={campo}
           />
         </div>
