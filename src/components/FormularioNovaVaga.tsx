@@ -165,7 +165,7 @@ export default function FormularioNovaVaga() {
                 maxLength={150}
                 value={empresa}
                 onChange={(event) => setEmpresa(event.target.value)}
-                placeholder="Ex.: Solinftec"
+                placeholder="Ex.: Empresa X"
                 className={`${campo} pl-10`}
               />
             </div>
