@@ -10,7 +10,7 @@ O projeto foi desenvolvido com foco em **organização, segurança, responsivida
 
 ## 🚀 Demonstração
 
-> 🚧 Deploy em produção em breve.
+> [Teste o App](https://controle-vagas-n7qi.onrender.com/)
 
 ---
 
