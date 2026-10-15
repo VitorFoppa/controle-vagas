@@ -33,7 +33,7 @@ async function ConteudoVagas() {
   const { data: vagas, error } = await supabase
     .from("vagas")
     .select(
-      "id, empresa, cargo, modalidade, localizacao, salario, url, status, created_at, data_candidatura"
+      "id, empresa, cargo, modalidade, localizacao, salario, url, status, created_at, updated_at, data_candidatura"
     )
     .order("created_at", { ascending: false });
 

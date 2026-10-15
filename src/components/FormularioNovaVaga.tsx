@@ -122,6 +122,17 @@ export default function FormularioNovaVaga() {
         return;
       }
 
+
+      // Limpa os campos após salvar com sucesso.
+      setEmpresa("");
+      setCargo("");
+      setModalidade("");
+      setLocalizacao("");
+      setSalario("");
+      setUrl("");
+      setStatus("SALVA");
+      setObservacoes("");
+      setDataCandidatura("");
       // Retorna à lista após salvar com sucesso.
       router.push("/vagas");
       router.refresh();
